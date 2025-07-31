@@ -1,17 +1,13 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 import os
-from openai import OpenAI
+import openai
 
 app = Flask(__name__)
 app.secret_key = "secret"  # Needed for flash messages
 
-# Load API key and set Groq base URL
-api_key = os.environ.get("GROQ_API_KEY", "")
-
-client = OpenAI(
-    api_key=api_key,
-    base_url="https://api.groq.com/openai/v1/"
-)
+# Set Groq API key and base URL (for old SDK)
+openai.api_key = os.environ.get("GROQ_API_KEY", "")
+openai.api_base = "https://api.groq.com/openai/v1"  # note: no trailing slash
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -31,12 +27,12 @@ def index():
 
         if prompt:
             try:
-                response = client.chat.completions.create(
-                    model="llama3-8b-8192",  # or mixtral if preferred
+                response = openai.ChatCompletion.create(
+                    model="llama3-8b-8192",  # or mixtral
                     messages=[{"role": "user", "content": prompt}],
                     max_tokens=400
                 )
-                result = response.choices[0].message.content.strip()
+                result = response.choices[0].message["content"].strip()
             except Exception as e:
                 result = f"Error: {e}"
 
@@ -44,13 +40,11 @@ def index():
 
 @app.route("/feedback", methods=["POST"])
 def feedback():
-        user_feedback = request.form.get("feedback")
-        print("User Feedback:", user_feedback)  # Optional log to console
+    user_feedback = request.form.get("feedback")
+    print("User Feedback:", user_feedback)  # Optional: console log
 
-        # Save feedback to a file
-        with open("feedback_log.txt", "a") as f:
-            f.write(f"{user_feedback}\n")
+    with open("feedback_log.txt", "a") as f:
+        f.write(f"{user_feedback}\n")
 
-        flash("Thanks for your feedback!", "info")
-        return redirect(url_for("index"))
-
+    flash("Thanks for your feedback!", "info")
+    return redirect(url_for("index"))
