@@ -1,13 +1,16 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 import os
-import openai
+from openai import OpenAI
 
 app = Flask(__name__)
-app.secret_key = "secret"  # Needed for flash messages
+app.secret_key = "secret"
 
-# Set Groq API key and base URL (for old SDK)
-openai.api_key = os.environ.get("GROQ_API_KEY", "")
-openai.api_base = "https://api.groq.com/openai/v1"  # note: no trailing slash
+# Load Groq API key
+api_key = os.environ.get("GROQ_API_KEY", "")
+client = OpenAI(
+    api_key=api_key,
+    base_url="https://api.groq.com/openai/v1/"
+)
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -27,12 +30,12 @@ def index():
 
         if prompt:
             try:
-                response = openai.ChatCompletion.create(
-                    model="llama3-8b-8192",  # or mixtral
+                response = client.chat.completions.create(
+                    model="llama3-8b-8192",  # or "mixtral-8x7b-32768"
                     messages=[{"role": "user", "content": prompt}],
                     max_tokens=400
                 )
-                result = response.choices[0].message["content"].strip()
+                result = response.choices[0].message.content.strip()
             except Exception as e:
                 result = f"Error: {e}"
 
@@ -41,10 +44,10 @@ def index():
 @app.route("/feedback", methods=["POST"])
 def feedback():
     user_feedback = request.form.get("feedback")
-    print("User Feedback:", user_feedback)  # Optional: console log
-
     with open("feedback_log.txt", "a") as f:
         f.write(f"{user_feedback}\n")
-
     flash("Thanks for your feedback!", "info")
     return redirect(url_for("index"))
+
+if __name__ == "__main__":
+    app.run(debug=True)
