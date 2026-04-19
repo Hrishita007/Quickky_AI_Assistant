@@ -1,4 +1,4 @@
-Awesome! 🎉 Now that your project is published on GitHub, here’s a complete and clean **`README.md`** you can paste into your repo:
+
 
 ---
 
