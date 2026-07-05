@@ -5,6 +5,8 @@
 ````markdown
  🧠 AI Assistant – Flask Web App
 
+[![Render](https://img.shields.io/badge/Hosted%20on-Render-6cc24a?logo=render&logoColor=white)](https://quickky-ai-assistant.onrender.com)
+
 A simple AI-powered assistant built using Flask and Groq's LLM API.  
 This assistant can:
 - ✅ Answer factual questions
@@ -40,9 +42,9 @@ This assistant can:
 ### 1. Clone the Repo
 
 ```bash
-git clone https://github.com/your-username/ai-assistant-flask.git
-cd ai-assistant-flask
-````
+git clone https://github.com/Hrishita007/Quickky_AI_Assistant.git
+cd Quickky_AI_Assistant
+```
 
 ### 2. Install Dependencies
 
@@ -70,9 +72,10 @@ The app will run at `http://localhost:5000`
 
 ---
 
+
 ## 🌐 Live Demo
 
-> \[Add your Render link here once deployed]
+Live app: https://quickky-ai-assistant.onrender.com  
 
 ---
 
