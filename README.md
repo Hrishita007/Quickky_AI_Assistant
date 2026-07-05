@@ -2,7 +2,6 @@
 
 ---
 
-````markdown
  🧠 AI Assistant – Flask Web App
 
 [![Render](https://img.shields.io/badge/Hosted%20on-Render-6cc24a?logo=render&logoColor=white)](https://quickky-ai-assistant.onrender.com)
@@ -90,9 +89,6 @@ ai-assistant-flask/
 ├── requirements.txt
 ├── README.md
 └── .gitignore
-```
-
----
 
 ✨ Credits
 
