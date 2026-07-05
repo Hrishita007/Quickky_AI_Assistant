@@ -148,6 +148,14 @@
     <form method="post">
       <textarea name="user_input" placeholder="Enter your question or text..." rows="6"></textarea><br><br>
 
+      <label for="model">Choose model:</label>
+      <select name="model" id="model">
+        <option value="openai/gpt-oss-120b" {% if model == 'openai/gpt-oss-120b' %}selected{% endif %}>openai/gpt-oss-120b</option>
+        <option value="openai/gpt-oss-20b" {% if model == 'openai/gpt-oss-20b' %}selected{% endif %}>openai/gpt-oss-20b</option>
+        <option value="llama-3.1-8b-instant" {% if model == 'llama-3.1-8b-instant' %}selected{% endif %}>llama-3.1-8b-instant</option>
+        <option value="llama-3.3-70b-versatile" {% if model == 'llama-3.3-70b-versatile' %}selected{% endif %}>llama-3.3-70b-versatile</option>
+      </select>
+
       <label><input type="radio" name="task" value="question" required> Answer a Question</label>
       <label><input type="radio" name="task" value="summary"> Summarize Text</label>
       <label><input type="radio" name="task" value="creative"> Generate Story or Poem</label><br>

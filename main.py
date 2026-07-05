@@ -1,23 +1,40 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 import os
+from dotenv import load_dotenv
 from openai import OpenAI
 
+load_dotenv()
 app = Flask(__name__)
 app.secret_key = "secret"
 
 # Load Groq API key
-api_key = os.environ.get("GROQ_API_KEY", "")
-client = OpenAI(
-    api_key=api_key,
-    base_url="https://api.groq.com/openai/v1/"
-)
+api_key = os.environ.get("GROQ_API_KEY")
+client = None
+if api_key:
+    client = OpenAI(
+        api_key=api_key,
+        base_url="https://api.groq.com/openai/v1/"
+    )
+else:
+    app.logger.warning("GROQ_API_KEY is not set. Add it to .env or environment variables.")
 
 @app.route("/", methods=["GET", "POST"])
 def index():
     result = ""
+    supported_models = [
+        "openai/gpt-oss-120b",
+        "openai/gpt-oss-20b",
+        "llama-3.1-8b-instant",
+        "llama-3.3-70b-versatile"
+    ]
+    model = os.environ.get("GROQ_MODEL", "openai/gpt-oss-120b")
+
     if request.method == "POST":
         task = request.form.get("task")
         user_input = request.form.get("user_input")
+        model = request.form.get("model", model)
+        if model not in supported_models:
+            model = "openai/gpt-oss-120b"
 
         if task == "question":
             prompt = f"Answer this question clearly: {user_input}"
@@ -29,17 +46,20 @@ def index():
             prompt = ""
 
         if prompt:
-            try:
-                response = client.chat.completions.create(
-                    model="llama3-8b-8192",  # or "mixtral-8x7b-32768"
-                    messages=[{"role": "user", "content": prompt}],
-                    max_tokens=400
-                )
-                result = response.choices[0].message.content.strip()
-            except Exception as e:
-                result = f"Error: {e}"
+            if client is None:
+                result = "Error: GROQ_API_KEY is not configured. Set it in .env or environment variables."
+            else:
+                try:
+                    response = client.chat.completions.create(
+                        model=model,
+                        messages=[{"role": "user", "content": prompt}],
+                        max_tokens=400
+                    )
+                    result = response.choices[0].message.content.strip()
+                except Exception as e:
+                    result = f"Error: {e}"
 
-    return render_template("index.html", result=result)
+    return render_template("index.html", result=result, model=model)
 
 @app.route("/feedback", methods=["POST"])
 def feedback():
